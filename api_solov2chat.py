@@ -699,7 +699,6 @@ if st.sidebar.button("🔄 Refetch All", use_container_width=True, type="seconda
     st.session_state.companies_data = []
     st.session_state.fetch_index = 0
     st.session_state.deleted_ids = []
-    st.session_state.employee_data = {}  # Clear employee data too
     st.rerun()
 
 # ==================== DEBUG SECTION ====================
