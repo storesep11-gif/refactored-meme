@@ -928,7 +928,6 @@ def display_companies(companies_data, compact_view, use_abbr, age_min, age_max, 
         
         # Get employee data for this company if available
         company_id = c['company_id']
-        employee_list = st.session_state.employee_data.get(company_id, [])
         position_summary = get_position_summary(employee_list)
         
         prices = possible_prices
