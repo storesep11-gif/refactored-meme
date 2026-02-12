@@ -352,7 +352,6 @@ def fetch_company_individual(company_id):
         
         # Extract employee data from same API response
         employee_list = parse_employee_data(company_data)
-        position_summary = get_position_summary(employee_list)
         
         daily_income = company_data.get("daily_income", 0)
         possible_prices = calculate_possible_prices(daily_income)
@@ -928,7 +927,6 @@ def display_companies(companies_data, compact_view, use_abbr, age_min, age_max, 
         
         # Get employee data for this company if available
         company_id = c['company_id']
-        position_summary = get_position_summary(employee_list)
         
         prices = possible_prices
         if compact_view:
