@@ -548,7 +548,6 @@ def init_session():
         "bulk_id_data": None,  # Store bulk check results
         "id_check_performed": False,
         "show_customers_in_history": False,
-        "employee_data": {},  # Store employee data by company_id
         "show_employees_for": None  # Which company to show employees for
     }
     for k, v in defaults.items():
