@@ -933,22 +933,26 @@ def display_companies(companies_data, compact_view, use_abbr, age_min, age_max, 
         
         prices = possible_prices
         if compact_view:
-            # Compact view with employee summary
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.markdown(f"**{c['name']}** (ID: {c['company_id']}, {c['days_old']} days, {employees})  \n⭐ {c['rating']} | 💰 ${format_number(c['daily_income'], use_abbr)}/day | 📈 ${format_number(c['weekly_income'], use_abbr)}/wk")
-            
-            with col2:
-                # Employee button
-                if employee_list:
-                    if st.button(f"👥 {len(employee_list)}", key=f"emp_btn_{company_id}", help="View employees"):
-                        if st.session_state.show_employees_for == company_id:
-                            st.session_state.show_employees_for = None
-                        else:
-                            st.session_state.show_employees_for = company_id
-                        st.rerun()
-                else:
-                    st.caption("No emp data")
+            if st.session_state.show_employees_for == company_id:
+    snapshot_to_use = st.session_state.snapshot_date if st.session_state.view_mode == "Current" else title_suffix.replace(" (Snapshot: ", "").replace(")", "")
+
+    employee_rows = fetch_employee_snapshot_from_db(company_id, snapshot_to_use)
+
+    if employee_rows:
+        with st.expander("👥 Employee Details", expanded=True):
+            emp_df = pd.DataFrame([
+                {
+                    "Name": emp["name"],
+                    "Position": emp["position"],
+                    "Days": emp["days_in_company"],
+                    "Last Active": emp["last_action"]
+                }
+                for emp in employee_rows
+            ])
+            st.dataframe(emp_df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No employee snapshot found for this date.")
+
             
             # Show position summary if available
             if position_summary:
@@ -1005,28 +1009,26 @@ def display_companies(companies_data, compact_view, use_abbr, age_min, age_max, 
                 col8.metric("Emp Data", "None")
             
             # Employee expander
-            if employee_list:
-                with st.expander(f"👥 View {len(employee_list)} Employees"):
-                    emp_cols = st.columns([2, 2, 1, 2, 2])
-                    emp_cols[0].write("**Name**")
-                    emp_cols[1].write("**Position**")
-                    emp_cols[2].write("**Days**")
-                    emp_cols[3].write("**Last Active**")
-                    emp_cols[4].write("**Status**")
-                    
-                    for emp in sorted(employee_list, key=lambda x: (x["position"], x["name"])):
-                        emp_cols[0].write(emp["name"])
-                        emp_cols[1].write(emp["position"])
-                        emp_cols[2].write(str(emp["days_in_company"]))
-                        emp_cols[3].write(emp["last_action_relative"] or "-")
-                        
-                        # Status with color indicator
-                        status = emp["status_state"] or "Okay"
-                        color = emp["status_color"] or "green"
-                        color_emoji = {"green": "🟢", "red": "🔴", "blue": "🔵", "yellow": "🟡"}.get(color, "⚪")
-                        emp_cols[4].write(f"{color_emoji} {status}")
-            else:
-                st.caption("👥 No detailed employee data available")
+            if st.session_state.show_employees_for == company_id:
+    snapshot_to_use = st.session_state.snapshot_date if st.session_state.view_mode == "Current" else title_suffix.replace(" (Snapshot: ", "").replace(")", "")
+
+    employee_rows = fetch_employee_snapshot_from_db(company_id, snapshot_to_use)
+
+    if employee_rows:
+        with st.expander("👥 Employee Details", expanded=True):
+            emp_df = pd.DataFrame([
+                {
+                    "Name": emp["name"],
+                    "Position": emp["position"],
+                    "Days": emp["days_in_company"],
+                    "Last Active": emp["last_action"]
+                }
+                for emp in employee_rows
+            ])
+            st.dataframe(emp_df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No employee snapshot found for this date.")
+
             
             if prices:
                 if len(prices) > 1:
