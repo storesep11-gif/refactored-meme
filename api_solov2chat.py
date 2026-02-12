@@ -1282,7 +1282,6 @@ if st.session_state.view_mode == "Current":
                 existing_ids.add(cid)
                 # Store employee data in session state
                 if employee_list:
-                    st.session_state.employee_data[cid] = employee_list
                 status.markdown(f"✅ **{i + 1}/{target}** | Loaded `{cid}` - {result['name']}")
             else:
                 error_count += 1
