@@ -396,6 +396,27 @@ def get_existing_snapshots(snapshot_date):
     except Exception:
         return set()
 
+# ==================== EMPLOYEE FETCH (DATABASE - RLS SAFE) ====================
+def fetch_employee_snapshot_from_db(company_id: int, snapshot_date):
+    """
+    Fetch employee snapshot from database using RPC (RLS safe).
+    """
+    try:
+        result = supabase.rpc(
+            "get_employee_snapshot_by_company_and_date",
+            {
+                "target_company_id": company_id,
+                "target_date": snapshot_date
+            }
+        ).execute()
+
+        if result.data:
+            return result.data
+        return []
+    except Exception:
+        return []
+
+
 def check_existing_snapshots_count(snapshot_date):
     try:
         result = supabase.rpc("get_snapshot_by_date", {"target_date": snapshot_date}).execute()
